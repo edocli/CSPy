@@ -4,9 +4,9 @@ A pure Python interpreter for the **AP Computer Science Principles (AP CSP)** 20
 
 [AP CSP Exam Reference Sheet](https://apcentral.collegeboard.org/media/pdf/ap-computer-science-principles-exam-reference-sheet.pdf)
 
-> Note: This is just a final project for my university dual-credit course. The code is total spaghetti and it severely lacks error handling. I might update it later, but probably won't.
+> **Note**: This is just a final project for my dual-credit course. The code is total spaghetti and it severely lacks error handling. I might update it later, but probably won't.
 
-~~Special thanks to Gemini3Pro for the invaluable assistance 🤓~~
+~~Special thanks to Gemini 3 Pro for the invaluable assistance 🤓~~
 
 ## ✨ Features
 
@@ -31,21 +31,23 @@ Assuming your interpreter script is named `cspy.py` and your AP CSP code is in `
 
 1. **Using standard Python**:
 
-    ```bash
+    ```sh
     python cspy.py script.csp
     ```
 
 2. **Using `uv`**:
 
-    ```bash
+    ```sh
     uv run cspy.py script.csp
     ```
 
 ## 📖 Syntax Guide
 
+> **Note**: CSPy does not support comments. The `#` comments shown here are purely for demonstration.
+
 ### Variables & Assignment
 
-```text
+```
 x <- 10
 str <- "Hello"
 is_valid <- TRUE
@@ -53,9 +55,9 @@ is_valid <- TRUE
 
 ### List Operations
 
-> **Note**: Indexes start at **1**.
+> **Note**: Indexes start at `1`.
 
-```text
+```
 # Definition
 nums <- [10, 20, 30]
 
@@ -72,7 +74,7 @@ len <- LENGTH(nums)
 
 ### Control Flow
 
-```text
+```
 # Conditionals
 IF (x > 5) {
     DISPLAY("Big")
@@ -97,7 +99,7 @@ FOR EACH item IN nums {
 
 ### Procedures
 
-```text
+```
 PROCEDURE add(a, b) {
     RETURN(a + b)
 }
@@ -119,7 +121,7 @@ The interpreter follows a classic **Recursive Descent** architecture:
 
 **Recursive Fibonacci Sequence:**
 
-```text
+```
 PROCEDURE fib(n) {
     IF (n <= 2) {
         RETURN(1)
@@ -134,7 +136,7 @@ DISPLAY(result)
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome\! Planned improvements include:
+Contributions, issues, and feature requests are welcome! Planned improvements include:
 
 * Detailed error reporting (Line/Column numbers).
 * Interactive REPL mode.
