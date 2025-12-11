@@ -58,6 +58,8 @@ class TokenType(Enum):
     PROC = "PROC"
     RET = "RET"
 
+    IMPORT = "IMPORT"
+
 
 @dataclass(frozen=True, slots=True)
 class Token:
@@ -173,6 +175,10 @@ class Return(AST):
 class BuiltinProc:
     func: Callable[[list[Any]], Any]
 
+@dataclass(frozen=True, slots=True)
+class Import(AST):
+    module_name: str
+
 
 class Lexer:
     keywords = {
@@ -192,6 +198,7 @@ class Lexer:
         "IN": TokenType.IN,
         "PROCEDURE": TokenType.PROC,
         "RETURN": TokenType.RET,
+        "IMPORT": TokenType.IMPORT,
     }
 
     single_tokens = {
@@ -412,6 +419,8 @@ class Parser:
             return self.proc_def()
         if tp == TokenType.RET:
             return self.ret_stmt()
+        if tp == TokenType.IMPORT:
+            return self.import_stmt()
         if tp == TokenType.ID and self.peek().type in (
             TokenType.ASSIGN,
             TokenType.LBRACKET,
@@ -514,6 +523,14 @@ class Parser:
         self.skip_nl()
         self.eat(TokenType.RPAREN)
         return Return(val)
+    
+    def import_stmt(self) -> AST:
+        """
+        Parse an import statement and return the corresponding AST node.
+        """
+        self.eat(TokenType.IMPORT)
+        module_name = self.eat(TokenType.STRING).val
+        return Import(module_name)
 
     def assign(self) -> AST:
         """
@@ -892,6 +909,21 @@ class Interpreter:
         """
         val = self.visit(node.val) if node.val else None
         raise ReturnException(val)
+    
+    def visit_Import(self, node: Import):
+        """
+        Visit an import node and import the specified module.
+        """
+        module_name = node.module_name
+        if not path.exists(module_name):
+            raise Exception(f"Module '{module_name}' not found.")
+        with open(module_name, "r", encoding="utf-8") as f:
+            code = f.read()
+        lexer = Lexer(code)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        ast = parser.parse()
+        self.visit(ast)
 
     def _builtin_display(self, args: list[Any]):
         """
