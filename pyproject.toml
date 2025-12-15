@@ -1,0 +1,12 @@
+[project]
+name = "cspy"
+version = "0.1.0"
+description = "AP CSP Pseudo-code Interpreter"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv.workspace]
+members = [
+    "test",
+]
