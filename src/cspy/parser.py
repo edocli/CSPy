@@ -1,5 +1,5 @@
-from tokens import TokenType, Token
-from csp_ast import (
+from .tokens import TokenType, Token
+from .nodes import (
     AST,
     Num,
     Str,

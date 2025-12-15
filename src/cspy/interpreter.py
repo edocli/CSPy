@@ -1,4 +1,4 @@
-from csp_ast import (
+from .nodes import (
     AST,
     Block,
     Num,
@@ -19,7 +19,7 @@ from csp_ast import (
     Return,
     BuiltinProc,
 )
-from tokens import TokenType
+from .tokens import TokenType
 
 class ReturnException(Exception):
     def __init__(self, value):

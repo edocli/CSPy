@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Any
 
-from tokens import Token
+from .tokens import Token
 
 @dataclass(frozen=True, slots=True)
 class AST:
