@@ -32,13 +32,13 @@ Assuming your code file is named `script.csp` - you can name it whatever you lik
 1. **Using standard Python**:
 
     ```sh
-    python main.py script.csp
+    python -m cspy script.csp
     ```
 
 2. **Using `uv`** (recommended):
 
     ```sh
-    uv run main.py script.csp
+    uv run -m cspy script.csp
     ```
 
 ## 📖 Syntax Guide
