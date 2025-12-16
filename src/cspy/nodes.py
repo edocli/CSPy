@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Any
+from typing import Callable
 
 from .tokens import Token
 
@@ -91,4 +91,4 @@ class Return(AST):
 
 @dataclass(frozen=True, slots=True)
 class BuiltinProc:
-    func: Callable[[list[Any]], Any]
+    func: Callable[[list], int | float | str | bool | list | None]

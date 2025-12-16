@@ -28,7 +28,7 @@ class Parser:
 
     def advance(self) -> None:
         self.pos += 1
-        self.curr = self.tokens[self.pos] if self.pos < len(self.tokens) else None
+        self.curr = self.tokens[self.pos] if self.pos < len(self.tokens) else Token(TokenType.EOF)
 
     def peek(self) -> Token:
         if self.pos + 1 < len(self.tokens):
