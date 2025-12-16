@@ -130,6 +130,8 @@ class Interpreter:
             return bool(left) and bool(right)
         elif op == TokenType.OR:
             return bool(left) or bool(right)
+        else:
+            raise Exception(f"Unknown binary operator: {op}")
 
     def visit_UnaryOp(self, node: UnaryOp) -> int | float | bool:
         expr = self.visit(node.expr)
