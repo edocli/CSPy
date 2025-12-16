@@ -21,6 +21,8 @@ from .nodes import (
 )
 from .tokens import TokenType
 
+RuntimeValue = int | float | str | bool | list | ProcDef | BuiltinProc
+
 class ReturnException(Exception):
     def __init__(self, value):
         self.value = value
@@ -41,20 +43,20 @@ class Interpreter:
     def current_scope(self) -> dict:
         return self.env[-1]
 
-    def get_var(self, name: str) -> int | float | str | bool | list | ProcDef | BuiltinProc:
+    def get_var(self, name: str) -> RuntimeValue:
         for scope in reversed(self.env):
             if name in scope:
                 return scope[name]
         raise Exception(f"Undefined variable: {name}")
 
-    def set_var(self, name: str, value) -> None:
+    def set_var(self, name: str, value: RuntimeValue) -> None:
         for scope in reversed(self.env):
             if name in scope:
                 scope[name] = value
                 return
         self.current_scope()[name] = value
 
-    def visit(self, node: AST) -> int | float | str | bool | list | None:
+    def visit(self, node: AST) -> RuntimeValue | None:
         method_name = f"visit_{type(node).__name__}"
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node)
@@ -62,7 +64,7 @@ class Interpreter:
     def generic_visit(self, node: AST) -> None:
         raise Exception(f"No visit_{type(node).__name__} method")
 
-    def visit_Block(self, node: Block) -> int | float | str | bool | list | None:
+    def visit_Block(self, node: Block) -> RuntimeValue | None:
         result = None
         for stmt in node.stmts:
             result = self.visit(stmt)
@@ -80,7 +82,7 @@ class Interpreter:
     def visit_ListLit(self, node: ListLit) -> list:
         return [self.visit(elt) for elt in node.elts]
 
-    def visit_ListAccess(self, node: ListAccess) -> int | float | str | bool | list | None:
+    def visit_ListAccess(self, node: ListAccess) -> RuntimeValue | None:
         target = self.visit(node.target)
         idx = self.visit(node.idx) - 1
         if not isinstance(target, list):
@@ -92,7 +94,7 @@ class Interpreter:
         except IndexError:
             raise Exception(f"List index out of range: {idx + 1}")
 
-    def visit_Var(self, node: Var) -> int | float | str | bool | list | ProcDef | BuiltinProc:
+    def visit_Var(self, node: Var) -> RuntimeValue:
         return self.get_var(node.val)
 
     def visit_BinOp(self, node: BinOp) -> int | float | str | bool:
@@ -125,9 +127,9 @@ class Interpreter:
         elif op == TokenType.GE:
             return left >= right
         elif op == TokenType.AND:
-            return left and right
+            return bool(left) and bool(right)
         elif op == TokenType.OR:
-            return left or right
+            return bool(left) or bool(right)
 
     def visit_UnaryOp(self, node: UnaryOp) -> int | float | bool:
         expr = self.visit(node.expr)
@@ -135,8 +137,10 @@ class Interpreter:
             return not expr
         elif node.op.type == TokenType.MINUS:
             return -expr
+        else:
+            raise Exception(f"Unknown unary operator: {node.op.type}")
 
-    def visit_Assign(self, node: Assign) -> int | float | str | bool | list | None:
+    def visit_Assign(self, node: Assign) -> RuntimeValue | None:
         val = self.visit(node.right)
         if isinstance(val, list):
             val = val[:]
@@ -148,7 +152,7 @@ class Interpreter:
             target[idx] = val
         return val
 
-    def visit_IfStmt(self, node: IfStmt) -> int | float | str | bool | list | None:
+    def visit_IfStmt(self, node: IfStmt) -> RuntimeValue | None:
         if self.visit(node.cond):
             return self.visit(node.then_blk)
         elif node.else_blk:
@@ -173,7 +177,7 @@ class Interpreter:
     def visit_ProcDef(self, node: ProcDef) -> None:
         self.set_var(node.name.val, node)
 
-    def visit_ProcCall(self, node: ProcCall) -> int | float | str | bool | list | None:
+    def visit_ProcCall(self, node: ProcCall) -> RuntimeValue | None:
         proc_node = self.get_var(node.name.val)
         if isinstance(proc_node, BuiltinProc):
             arg_values = [self.visit(arg) for arg in node.args]
