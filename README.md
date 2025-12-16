@@ -27,18 +27,18 @@ A pure Python interpreter for the **AP Computer Science Principles (AP CSP)** 20
 
 ### Running the Interpreter
 
-Assuming your interpreter script is named `cspy.py` and your AP CSP code is in `script.csp`.
+Assuming your code file is named `script.csp` - you can name it whatever you like.
 
 1. **Using standard Python**:
 
     ```sh
-    python cspy.py script.csp
+    python -m cspy script.csp
     ```
 
-2. **Using `uv`**:
+2. **Using `uv`** (recommended):
 
     ```sh
-    uv run cspy.py script.csp
+    uv run -m cspy script.csp
     ```
 
 ## 📖 Syntax Guide
