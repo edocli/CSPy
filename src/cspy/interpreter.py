@@ -97,7 +97,7 @@ class Interpreter:
     def visit_Var(self, node: Var) -> RuntimeValue:
         return self.get_var(node.val)
 
-    def visit_BinOp(self, node: BinOp) -> RuntimeValue:
+    def visit_BinOp(self, node: BinOp) -> int | float | str | bool:
         left = self.visit(node.left)
         right = self.visit(node.right)
         op = node.op.type
