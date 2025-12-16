@@ -43,30 +43,18 @@ class Lexer:
     }
 
     def __init__(self, text: str) -> None:
-        """
-        Initialize the lexer with the input text.
-        """
         self.text = text
         self.pos = 0
         self.curr = self.text[self.pos] if self.text else None
 
     def advance(self) -> None:
-        """
-        Advance the 'pos' pointer and set the 'curr' character.
-        """
         self.pos += 1
         self.curr = self.text[self.pos] if self.pos < len(self.text) else None
 
     def peek(self) -> str | None:
-        """
-        Peek at the next character without advancing the position.
-        """
         return self.text[self.pos + 1] if self.pos + 1 < len(self.text) else None
 
     def eat_num(self) -> Token:
-        """
-        Eat a number (integer or float) from the input and return a NUMBER token.
-        """
         num = ""
         is_float = False
         while self.curr is not None:
@@ -83,9 +71,6 @@ class Lexer:
         return Token(TokenType.NUMBER, float(num) if is_float else int(num))
 
     def eat_str(self) -> Token:
-        """
-        Eat a string literal from the input and return a STRING token.
-        """
         res = ""
         self.advance()
         while self.curr and self.curr != '"':
@@ -99,9 +84,6 @@ class Lexer:
         return Token(TokenType.STRING, res)
 
     def eat_id(self) -> Token:
-        """
-        Eat an identifier or keyword from the input and return the appropriate token.
-        """
         start_pos = self.pos
         while self.curr and (self.curr.isalnum() or self.curr == "_"):
             self.advance()
@@ -110,17 +92,11 @@ class Lexer:
         return Token(tp, res if tp == TokenType.ID else None)
 
     def eat_sym(self) -> Token:
-        """
-        Eat a single-character symbol from the input and return the corresponding token.
-        """
         char = self.curr
         self.advance()
         return Token(self.single_tokens[char])
 
     def eat_db_sym(self) -> Token:
-        """
-        Eat a double-character symbol from the input and return the corresponding token.
-        """
         char = self.curr
         nxt = self.peek()
         mp = self.double_tokens[char]
@@ -131,9 +107,6 @@ class Lexer:
         return Token(tp)
 
     def tokenize(self) -> list[Token]:
-        """
-        Tokenize the input text and return a list of tokens.
-        """
         toks = []
         while self.curr is not None:
             if self.curr.isspace():

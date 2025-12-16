@@ -41,46 +41,46 @@ class Interpreter:
     def current_scope(self) -> dict:
         return self.env[-1]
 
-    def get_var(self, name: str):
+    def get_var(self, name: str) -> int | float | str | bool | list | ProcDef | BuiltinProc:
         for scope in reversed(self.env):
             if name in scope:
                 return scope[name]
         raise Exception(f"Undefined variable: {name}")
 
-    def set_var(self, name: str, value):
+    def set_var(self, name: str, value) -> None:
         for scope in reversed(self.env):
             if name in scope:
                 scope[name] = value
                 return
         self.current_scope()[name] = value
 
-    def visit(self, node: AST):
+    def visit(self, node: AST) -> int | float | str | bool | list | None:
         method_name = f"visit_{type(node).__name__}"
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node)
 
-    def generic_visit(self, node: AST):
+    def generic_visit(self, node: AST) -> None:
         raise Exception(f"No visit_{type(node).__name__} method")
 
-    def visit_Block(self, node: Block):
+    def visit_Block(self, node: Block) -> int | float | str | bool | list | None:
         result = None
         for stmt in node.stmts:
             result = self.visit(stmt)
         return result
 
-    def visit_Num(self, node: Num):
+    def visit_Num(self, node: Num) -> int | float:
         return node.val
 
-    def visit_Str(self, node: Str):
+    def visit_Str(self, node: Str) -> str:
         return node.val
 
-    def visit_Bool(self, node: Bool):
+    def visit_Bool(self, node: Bool) -> bool:
         return node.val
 
-    def visit_ListLit(self, node: ListLit):
+    def visit_ListLit(self, node: ListLit) -> list:
         return [self.visit(elt) for elt in node.elts]
 
-    def visit_ListAccess(self, node: ListAccess):
+    def visit_ListAccess(self, node: ListAccess) -> int | float | str | bool | list | None:
         target = self.visit(node.target)
         idx = self.visit(node.idx) - 1
         if not isinstance(target, list):
@@ -92,10 +92,10 @@ class Interpreter:
         except IndexError:
             raise Exception(f"List index out of range: {idx + 1}")
 
-    def visit_Var(self, node: Var):
+    def visit_Var(self, node: Var) -> int | float | str | bool | list | ProcDef | BuiltinProc:
         return self.get_var(node.val)
 
-    def visit_BinOp(self, node: BinOp):
+    def visit_BinOp(self, node: BinOp) -> int | float | str | bool:
         left = self.visit(node.left)
         right = self.visit(node.right)
         op = node.op.type
@@ -129,14 +129,14 @@ class Interpreter:
         elif op == TokenType.OR:
             return left or right
 
-    def visit_UnaryOp(self, node: UnaryOp):
+    def visit_UnaryOp(self, node: UnaryOp) -> int | float | bool:
         expr = self.visit(node.expr)
         if node.op.type == TokenType.NOT:
             return not expr
         elif node.op.type == TokenType.MINUS:
             return -expr
 
-    def visit_Assign(self, node: Assign):
+    def visit_Assign(self, node: Assign) -> int | float | str | bool | list | None:
         val = self.visit(node.right)
         if isinstance(val, list):
             val = val[:]
@@ -148,32 +148,32 @@ class Interpreter:
             target[idx] = val
         return val
 
-    def visit_IfStmt(self, node: IfStmt):
+    def visit_IfStmt(self, node: IfStmt) -> int | float | str | bool | list | None:
         if self.visit(node.cond):
             return self.visit(node.then_blk)
         elif node.else_blk:
             return self.visit(node.else_blk)
 
-    def visit_RepeatTimes(self, node: RepeatTimes):
+    def visit_RepeatTimes(self, node: RepeatTimes) -> None:
         count = self.visit(node.times)
         for _ in range(int(count)):
             self.visit(node.body)
 
-    def visit_RepeatUntil(self, node: RepeatUntil):
+    def visit_RepeatUntil(self, node: RepeatUntil) -> None:
         while not self.visit(node.cond):
             self.visit(node.body)
 
-    def visit_ForEach(self, node: ForEach):
+    def visit_ForEach(self, node: ForEach) -> None:
         iterable = self.visit(node.iter)
         var_name = node.var.val
         for item in iterable:
             self.set_var(var_name, item)
             self.visit(node.body)
 
-    def visit_ProcDef(self, node: ProcDef):
+    def visit_ProcDef(self, node: ProcDef) -> None:
         self.set_var(node.name.val, node)
 
-    def visit_ProcCall(self, node: ProcCall):
+    def visit_ProcCall(self, node: ProcCall) -> int | float | str | bool | list | None:
         proc_node = self.get_var(node.name.val)
         if isinstance(proc_node, BuiltinProc):
             arg_values = [self.visit(arg) for arg in node.args]
@@ -196,15 +196,15 @@ class Interpreter:
             return ret_val
         raise Exception(f"{node.name.val} is not a procedure")
 
-    def visit_Return(self, node: Return):
+    def visit_Return(self, node: Return) -> None:
         val = self.visit(node.val) if node.val else None
         raise ReturnException(val)
 
-    def _builtin_display(self, args: list[list]):
+    def _builtin_display(self, args: list) -> None:
         print(*args)
         return None
 
-    def _builtin_input(self, args: list[list]):
+    def _builtin_input(self, args: list) -> str | int | float:
         prompt = args[0] if args else ""
         try:
             val = input(prompt)
@@ -214,13 +214,13 @@ class Interpreter:
         except ValueError:
             return val
 
-    def _builtin_random(self, args: list[list]):
+    def _builtin_random(self, args: list) -> int:
         import random
         if len(args) != 2:
             raise Exception("RANDOM takes exactly 2 arguments")
         return random.randint(args[0], args[1])
 
-    def _builtin_append(self, args: list[list]):
+    def _builtin_append(self, args: list) -> None:
         if len(args) != 2:
             raise Exception("APPEND takes exactly 2 arguments")
         lst, val = args
@@ -229,7 +229,7 @@ class Interpreter:
         lst.append(val)
         return None
 
-    def _builtin_insert(self, args: list[list]):
+    def _builtin_insert(self, args: list) -> None:
         if len(args) != 3:
             raise Exception("INSERT takes exactly 3 arguments")
         lst, idx, val = args
@@ -240,7 +240,7 @@ class Interpreter:
         lst.insert(idx - 1, val)
         return None
 
-    def _builtin_remove(self, args: list[list]):
+    def _builtin_remove(self, args: list) -> None:
         if len(args) != 2:
             raise Exception("REMOVE takes exactly 2 arguments")
         lst, idx = args
@@ -254,7 +254,7 @@ class Interpreter:
             raise Exception(f"List index out of range: {idx}")
         return None
 
-    def _builtin_length(self, args: list[list]):
+    def _builtin_length(self, args: list) -> int:
         if len(args) != 1:
             raise Exception("LENGTH takes exactly 1 argument")
         return len(args[0])
