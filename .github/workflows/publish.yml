@@ -23,7 +23,7 @@ jobs:
         with:
           enable-cache: true
       - name: Build
-        run: uv build
+        run: uv build --no-create-gitignore
       - name: Publish
         run: uv publish
       - name: Release
