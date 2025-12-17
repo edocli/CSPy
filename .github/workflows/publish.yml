@@ -6,13 +6,13 @@ on:
       - v*
 
 jobs:
-  publish-to-pypi:
+  publish:
     runs-on: ubuntu-latest
     environment:
       name: pypi
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -26,3 +26,9 @@ jobs:
         run: uv build
       - name: Publish
         run: uv publish
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*
+          fail_on_unmatched_files: true
