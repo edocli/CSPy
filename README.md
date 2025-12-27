@@ -6,8 +6,6 @@ A pure Python interpreter for the **AP Computer Science Principles (AP CSP)** 20
 
 > **Note**: This is just a final project for my dual-credit course. The code is total spaghetti and it severely lacks error handling. I might update it later, but probably won't.
 
-~~Special thanks to Gemini 3 Pro for the invaluable assistance 🤓~~
-
 ## ✨ Features
 
 * **Standard Syntax Compliance**: Supports variable assignment (`<-`), arithmetic operations, and logical comparisons.
