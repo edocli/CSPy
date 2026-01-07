@@ -10,6 +10,7 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.scripts]
+apcspy = "cspy.__main__:main"
 cspy = "cspy.__main__:main"
 
 [build-system]

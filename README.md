@@ -36,7 +36,7 @@ Assuming your code file is named `script.csp` - you can name it whatever you lik
 2. **Using `uv`** (recommended):
 
     ```sh
-    uv run -m cspy script.csp
+    uvx apcspy script.csp
     ```
 
 ## 📖 Syntax Guide
