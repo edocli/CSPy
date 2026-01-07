@@ -1,6 +1,6 @@
 [project]
 name = "APCSPy"
-version = "0.1.1"
+version = "0.1.2"
 description = "AP CSP Pseudo-code Interpreter"
 readme = "README.md"
 authors = [
