@@ -4,8 +4,6 @@ A pure Python interpreter for the **AP Computer Science Principles (AP CSP)** 20
 
 [AP CSP Exam Reference Sheet](https://apcentral.collegeboard.org/media/pdf/ap-computer-science-principles-exam-reference-sheet.pdf)
 
-> **Note**: This is just a final project for my dual-credit course. The code is total spaghetti and it severely lacks error handling. I might update it later, but probably won't.
-
 ## ✨ Features
 
 * **Standard Syntax Compliance**: Supports variable assignment (`<-`), arithmetic operations, and logical comparisons.
